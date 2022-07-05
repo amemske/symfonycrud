@@ -1,0 +1,3 @@
+index: #route name
+    path: /
+    controller: App\Controller\ArticleController::index #index method

@@ -1,0 +1,37 @@
+{% extends  'base.html.twig' %}
+
+{% block title %} SymfonyCrud {% endblock %}
+
+{% block body %}
+<h1>Articles</h1>
+{# how to passvariables from the controller  #}
+{#<p>My name is {{ name }} #}
+{% if articles %}
+<table class="table table-striped">
+    <thead>
+        <td>Name</td>
+        <td>Actions</td>
+    </thead>
+    <tbody>
+        {% for article in articles %}
+        <tr>
+            <td>{{ article.title }}</td>
+            <td>
+            <a href="/article/{{article.id}}" class="btn btn-dark">Show</a>
+            <a href="#" class="btn btn-danger delete-article" data-id={{article.id}}>Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+<p>No articles to display</p>
+
+{% endif %}
+
+
+{% endblock %}
+{%  block javascripts %}
+<script src="/js/main.js"></script>
+{%  endblock  %}
