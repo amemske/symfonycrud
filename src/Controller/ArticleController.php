@@ -75,6 +75,43 @@ class ArticleController extends AbstractController
     }
 
     /**
+     * @Route("/article/edit/{id}", name="edit_article")
+     * Method({"GET","POST"})
+     */
+    public function edit(Request $request, ManagerRegistry $doctrine, $id)
+    {
+        $article = new Article();
+        //find a single article
+        $article = $doctrine->getRepository(Article::class)->find($id);
+        $form = $this->createFormBuilder($article)
+            ->add('title', TextType::class, array('attr' =>
+            array('class' => 'form-control')))
+            ->add('body', TextareaType::class, array(
+                'required' => false,
+                'attr' => array('class' => 'form-control')
+            ))
+            ->add('save', SubmitType::class, array(
+                'label' => 'Update',
+                'attr' => array('class' => 'btn btn-primary mt-3')
+            ))
+            ->getForm();
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            //get to db
+            $entityManager = $doctrine->getManager();
+            //to actually save use flush
+            $entityManager->flush();
+            return $this->redirectToRoute('article_list');
+        }
+
+        return $this->render('articles/edit.html.twig', array(
+            'form' => $form->createView()
+        ));
+    }
+
+    /**
      * @Route("/article/{id}", name="article_show")
      */
     public function show(ManagerRegistry $doctrine, $id)
@@ -83,6 +120,25 @@ class ArticleController extends AbstractController
         $article = $doctrine->getRepository(Article::class)->find($id);
 
         return $this->render('articles/show.html.twig', array('article' => $article));
+    }
+    /**
+     * @Route("/article/delete/{id}")
+     * Method({"DELETE"})
+     */
+    public function delete(Request $request, ManagerRegistry $doctrine, $id)
+    {
+        //find it by id, then remove it
+        $article = $doctrine->getRepository(Article::class)->find($id);
+        //get to db
+        $entityManager = $doctrine->getManager();
+        //persist means we want to eventually save the data
+        $entityManager->remove($article);
+        //to actually save use flush
+        $entityManager->flush();
+
+        //return back a response
+        $response = new Response();
+        $response->send();
     }
 
     // /**
